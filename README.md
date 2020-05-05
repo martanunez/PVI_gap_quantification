@@ -41,20 +41,16 @@ cd PV_gap_quantification
 
 ## Usage
 ```
-Run steps 1, 2, 3, and 4 as explained in [*https://github.com/martanunez/LA_flattening*](https://github.com/martanunez/LA_flattening)
+**LA flattening:**
+Run steps 1, 2, 3, and 4 as explained in https://github.com/martanunez/LA_flattening)
 -------------------------------------------------------
+**Gap quantification:**
 5_compute_RGM_4veins.py [-h] [--meshfile PATH]
-
-Arguments:
-  -h, --help            show this help message and exit
-  --meshfile PATH       path to input mesh
-----------------------------------------------------
 5_compute_RGM_lateral_veins.py [-h] [--meshfile PATH]
 
 Arguments:
   -h, --help            show this help message and exit
   --meshfile PATH       path to input mesh
-
 
 ```
 
