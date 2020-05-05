@@ -1,9 +1,13 @@
-# Left atrial flattening
+# Semi-automatic quantification of incomplete Pulmonary Vein Isolation (PVI)
 Author: Marta Nuñez-Garcia (marnugar@gmail.com)
 
 ## About
-Implementation of the Left Atrial (LA) Fast Regional Flattening (FRF) method described in:
-[*Fast quasi-conformal regional flattening of the left atrium*. Marta Nuñez-Garcia, Gabriel Bernardino, Francisco Alarcón, Gala Caixal, Lluís Mont, Oscar Camara, and Constantine Butakoff.  IEEE Transactions on Visualization and Computer Graphics (2020)](https://ieeexplore.ieee.org/abstract/document/8959311). Please cite this reference when using this code. Preprint available at: [arXiv:1811.06896, (2018).](https://arxiv.org/pdf/1811.06896.pdf) 
+Implementation of the method described in: [*Mind the gap: quantification of incomplete ablation patterns after pulmonary vein isolation using minimum path search*. Marta Nuñez-Garcia, Oscar Camara, Mark D O’Neill, Reza Razavi, Henry Chubb, and Constantine Butakoff. Medical Image Analysis 51, 1-12](https://www.sciencedirect.com/science/article/abs/pii/S1361841518307965). Please cite this reference when using this code. Preprint available at: [arXiv:1806.06387, (2018).](https://arxiv.org/abs/1806.06387) 
+
+The method is modified with respect to the pipeline described in the paper as follows:
+- The automatic parcellation of the LA and definition of the gap searching areas (step 2) is done by using the flattening standardization method described in [*https://github.com/martanunez/LA_flattening*](https://github.com/martanunez/LA_flattening). 3D mesh registration is no longer used reducing execution time. 
+- Only one given scar segmentation is considered (multi-threshold result integration is not included).
+
 
 Example:
 
@@ -13,93 +17,52 @@ Example:
 [Python](https://www.python.org/) scripts depending (basically) on [VTK](https://vtk.org/) and [VMTK](http://www.vmtk.org/). 
 
 ## Pipeline
-The pipeline is split in 4 parts. You can skip the first ones depending on your input data.
+The pipeline is split in 5 parts. Please, refer to [*https://github.com/martanunez/LA_flattening*](https://github.com/martanunez/LA_flattening) to run the first 4 steps (i.e. LA flattening).
 
+The parcellation defined in a 2D reference template is then transferred to the 2D version of the LA obtained with steps 1 to 4 and to the 3D LA mesh afterwards.
+The definition of the areas where gaps will be searched is related to the chosen PVI strategy. In this work we considered the two most common PVI scenarios in clinical routine:
+- Independent-encirclement : the four PVs are independently isolated by creating PV-specific continuous lesions that completely surround each of them.
+- Joint-encirclement : the two ipsilateral veins (i.e., on the same side, right or left PVs) are jointly isolated by a lesion that simultaneously encircles the two of them.
 
-- **1_mesh_standardisation:** standardises LA mesh, i.e. clip pulmonary veins (PVs), left atrial appendage (LAA), and mitral valve (MV). Launches GUI and asks the user to select 5 seeds close to the ending points of the 4 PVs and LAA. It returns a clipped mesh and auxiliary files containing info about seeds, clipping planes, etc. This script is adapted from [run_standardization](https://github.com/catactg/SUM) by Catalina Tobon Gomez. 
-- **2_close_holes_project_info:** Closes holes corresponding to clipped PVs and LAA. Hole filling is done with [Butakoff's implementation](https://github.com/cbutakoff/tools/tree/master/FillSurfaceHoles) of the method published in P. Liepa "Filling Holes in Meshes", 2003. The binary file is included in this repository, you may need to provide execution permission (*chmod +x FillSurfaceHoles*). Hole filling can also be done manually with [reMESH.](http://remesh.sourceforge.net/) This script also marks the filled holes with a scalar array and additionally, transfers all scalar arrays in the input mesh to the output (closed) mesh.
-- **3_divide_LA:** Parcellates mesh creating appropriate paths to divide the LA in the 5 pieces considered in our regional flattening. Launch GUI and ask the user to select the 9 required seeds. See seeds order here:
-![Example image](https://github.com/martanunez/LA_flattening/blob/master/im_flat.png)
-- **4_flat_atria:** Quasi-conformal LA regional flattening. Given a LA mesh with clipped & filled holes (PVs, LAA) and only 1 hole corresponding to the MV, it returns a flat (2D) version of the input mesh. Implementation of a conformal flattening considering 6 boundaries (4 PVs + LAA + MV) and the additional regional constraints (division lines) obtained in the previous step.
+![Example image](https://github.com/martanunez/PV_gap_quantification/searching_areas.pdf)
+
+- **5_compute_RGM_4veins:**  
+- **5_compute_RGM_lateral_veins:** 
+
 
 ## Instructions
 Clone the repository:
 ```
-git clone https://github.com/martanunez/LA_flattening
+git clone https://github.com/martanunez/PV_gap_quantification
 
-cd LA_flattening
+cd PV_gap_quantification
 ```
 
 ## Usage
 ```
-1_mesh_standardisation.py [-h] [--meshfile PATH] [--pv_dist PV_DIST]
-                                 [--laa_dist LAA_DIST] [--maxslope MAXSLOPE]
-                                 [--clspacing CLSPACING]
-                                 [--skippointsfactor SKIPPOINTSFACTOR]
-                                 [--highslope HIGHSLOPE]
-                                 [--bumpcriterion BUMPCRITERION]
-                                 [--pvends PVENDS] [--vis VIS] [--save SAVE]
+5_compute_RGM_4veins.py [-h] [--meshfile PATH]
 
-optional arguments:
+Arguments:
   -h, --help            show this help message and exit
   --meshfile PATH       path to input mesh
-  --pv_dist PV_DIST     PV clipping distance (mm)
-  --laa_dist LAA_DIST   LAA clipping distance (mm)
-  --maxslope MAXSLOPE   Anything above this is ostium
-  --clspacing CLSPACING
-                        Resample the centerline with this spacing
-  --skippointsfactor SKIPPOINTSFACTOR
-                        Percentage of points to ignore at beginning of centerline
-  --highslope HIGHSLOPE
-                        Above this slope we start counting
-  --bumpcriterion BUMPCRITERION
-                        Ostium if slope higher than highslope and above bump criterion
-  --pvends PVENDS       Enforce the centerline to reach the end boundary of the surface.
-  --vis VIS             Set to 1 to visualise clipping results overlaid with original mesh
-  --save SAVE           Set to 0 to remove intermediate results (centerlines, clippoints, etc.)
-____________________________________________________________________________
 
-2_close_holes_project_info.py [-h] [--meshfile_open PATH]
-                                     [--meshfile_open_no_mitral PATH]
-                                     [--meshfile_closed PATH]
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --meshfile_open PATH  path to input mesh with clipped PVs and LAA
-  --meshfile_open_no_mitral PATH
-                        path to input mesh with additional MV clip
-  --meshfile_closed PATH
-                        path to output mesh, i.e. with filled holes
-____________________________________________________________________________
+5_compute_RGM_lateral_veins.py [-h] [--meshfile PATH]
 
-usage: 3_divide_LA.py [-h] [--meshfile PATH]
-
-optional arguments:
-  -h, --help       show this help message and exit
-  --meshfile PATH  path to input mesh
-___________________________________________________________________________
-
-usage: 4_flat_atria.py [-h] [--meshfile PATH] [--save_conts SAVE_CONTS]
-                       [--save_final_paths SAVE_FINAL_PATHS]
-
-optional arguments:
+Arguments:
   -h, --help            show this help message and exit
   --meshfile PATH       path to input mesh
-  --save_conts SAVE_CONTS
-                        set to true to save mesh contours/contraints
-  --save_final_paths SAVE_FINAL_PATHS
-                        set to true to save modified dividing paths
+
+
 ```
 
 ## Usage example
 ```
-python 1_mesh_standardisation.py --meshfile data/mesh.vtk --pv_dist 5 --laa_dist 5 --vis 1
+python 5_compute_RGM_4veins.py --meshfile data/mesh.vtk
 
-python 2_close_holes_project_info.py --meshfile_open data/mesh_crinkle_clipped.vtk --meshfile_open_no_mitral  data/mesh_clipped_mitral.vtk --meshfile_closed data/mesh_clipped_c.vtk
+and/or
 
-python 3_divide_LA.py --meshfile data/mesh_clipped_c.vtk
-
-python 4_flat_atria.py --meshfile data/mesh_clipped_c.vtk
+python 5_compute_RGM_lateral_veins.py --meshfile data/mesh.vtk
 ```
 
 ## Dependencies
