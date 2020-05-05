@@ -25,7 +25,7 @@ The definition of the areas where gaps will be searched is related to the chosen
 - Joint-encirclement : the two ipsilateral veins (i.e., on the same side, right or left PVs) are jointly isolated by a lesion that simultaneously encircles the two of them.
 
 Searching areas depicted in a two-dimensional representation of the LA:
-![Searching areas depicted in a two-dimensional representation of the LA](https://github.com/martanunez/PV_gap_quantification/blob/master/searching_areas.png | width=100)
+![Searching areas depicted in a two-dimensional representation of the LA](https://github.com/martanunez/PV_gap_quantification/blob/master/searching_areas.png)<!-- .element height="30%" width="30%" -->
 
 - **5_compute_RGM_4veins:**  
 - **5_compute_RGM_lateral_veins:** 
