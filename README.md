@@ -2,7 +2,7 @@
 Author: Marta Nuñez-Garcia (marnugar@gmail.com)
 
 ## About
-Implementation of the method described in: [*Mind the gap: quantification of incomplete ablation patterns after pulmonary vein isolation using minimum path search*. Marta Nuñez-Garcia, Oscar Camara, Mark D O’Neill, Reza Razavi, Henry Chubb, and Constantine Butakoff. Medical Image Analysis 51, 1-12](https://www.sciencedirect.com/science/article/abs/pii/S1361841518307965). Please cite this reference when using this code. Preprint available at: [arXiv:1806.06387, (2018).](https://arxiv.org/abs/1806.06387) 
+Implementation of the method described in: [*Mind the gap: quantification of incomplete ablation patterns after pulmonary vein isolation using minimum path search*. Marta Nuñez-Garcia, Oscar Camara, Mark D O’Neill, Reza Razavi, Henry Chubb, and Constantine Butakoff. Medical Image Analysis (2018) 51, 1-12](https://www.sciencedirect.com/science/article/abs/pii/S1361841518307965). Please cite this reference when using this code. Preprint available at: [arXiv:1806.06387.](https://arxiv.org/abs/1806.06387) 
 
 The method is modified with respect to the pipeline described in the paper as follows:
 - The automatic parcellation of the LA and definition of the gap searching areas (step 2) is done by using the flattening standardization method described in [*https://github.com/martanunez/LA_flattening*](https://github.com/martanunez/LA_flattening). 3D mesh registration is no longer used reducing execution time. 
@@ -24,7 +24,7 @@ The definition of the areas where gaps will be searched is related to the chosen
 - Independent-encirclement : the four PVs are independently isolated by creating PV-specific continuous lesions that completely surround each of them.
 - Joint-encirclement : the two ipsilateral veins (i.e., on the same side, right or left PVs) are jointly isolated by a lesion that simultaneously encircles the two of them.
 
-![Example image](https://github.com/martanunez/PV_gap_quantification/searching_areas.pdf)
+![Example image](https://github.com/martanunez/PV_gap_quantification/searching_areas.png)
 
 - **5_compute_RGM_4veins:**  
 - **5_compute_RGM_lateral_veins:** 
