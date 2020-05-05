@@ -25,7 +25,7 @@ The definition of the areas where gaps will be searched is related to the chosen
 - Joint-encirclement : the two ipsilateral veins (i.e., on the same side, right or left PVs) are jointly isolated by a lesion that simultaneously encircles the two of them.
 
 Searching areas depicted in a two-dimensional representation of the LA:
-![Searching areas depicted in a two-dimensional representation of the LA](https://github.com/martanunez/PV_gap_quantification/blob/master/searching_areas.png)<!-- .element height="30%" width="30%" -->
+<img src=https://github.com/martanunez/PV_gap_quantification/blob/master/searching_areas.png width="70%">
 
 - **5_compute_RGM_4veins:**  
 - **5_compute_RGM_lateral_veins:** 
@@ -41,13 +41,14 @@ cd PV_gap_quantification
 
 ## Usage
 ```
+Run steps 1, 2, 3, and 4 as explained in [*https://github.com/martanunez/LA_flattening*](https://github.com/martanunez/LA_flattening)
+-------------------------------------------------------
 5_compute_RGM_4veins.py [-h] [--meshfile PATH]
 
 Arguments:
   -h, --help            show this help message and exit
   --meshfile PATH       path to input mesh
-
-
+----------------------------------------------------
 5_compute_RGM_lateral_veins.py [-h] [--meshfile PATH]
 
 Arguments:
@@ -59,10 +60,14 @@ Arguments:
 
 ## Usage example
 ```
+LA flattening:
+python 1_mesh_standardisation.py --meshfile data/mesh.vtk --pv_dist 5 --laa_dist 5 --vis 1
+python 2_close_holes_project_info.py --meshfile_open data/mesh_crinkle_clipped.vtk --meshfile_open_no_mitral  data/mesh_clipped_mitral.vtk --meshfile_closed data/mesh_clipped_c.vtk
+python 3_divide_LA.py --meshfile data/mesh_clipped_c.vtk
+python 4_flat_atria.py --meshfile data/mesh_clipped_c.vtk
+
+Gap quantification:
 python 5_compute_RGM_4veins.py --meshfile data/mesh.vtk
-
-and/or
-
 python 5_compute_RGM_lateral_veins.py --meshfile data/mesh.vtk
 ```
 
