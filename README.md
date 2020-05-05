@@ -9,7 +9,7 @@ The method is modified with respect to the pipeline described in the paper as fo
 - Only one given scar segmentation is considered (multi-threshold result integration is not included).
 
 
-Example:
+Original pipeline (from the paper):
 
 ![Original pipeline](https://github.com/martanunez/PV_gap_quantification/blob/master/pipeline_gaps.png)
 
@@ -24,7 +24,8 @@ The definition of the areas where gaps will be searched is related to the chosen
 - Independent-encirclement : the four PVs are independently isolated by creating PV-specific continuous lesions that completely surround each of them.
 - Joint-encirclement : the two ipsilateral veins (i.e., on the same side, right or left PVs) are jointly isolated by a lesion that simultaneously encircles the two of them.
 
-![Searching areas depicted in a two-dimensional representation of the LA](https://github.com/martanunez/PV_gap_quantification/blob/master/searching_areas.png)
+Searching areas depicted in a two-dimensional representation of the LA:
+![Searching areas depicted in a two-dimensional representation of the LA](https://github.com/martanunez/PV_gap_quantification/blob/master/searching_areas.png | width=100)
 
 - **5_compute_RGM_4veins:**  
 - **5_compute_RGM_lateral_veins:** 
