@@ -8,7 +8,7 @@ The method is modified with respect to the pipeline described in the paper as fo
 - The automatic parcellation of the left atrium (LA) and definition of the gap searching areas (step 2) is done by using the flattening standardization method described in [*https://github.com/martanunez/LA_flattening*](https://github.com/martanunez/LA_flattening). 3D mesh registration is no longer used reducing execution time. 
 - Only one given scar segmentation is considered (multi-threshold result integration is not included).
 
-![Example](https://github.com/martanunez/PV_gap_quantification/blob/master/gaps.png
+![Example](https://github.com/martanunez/PV_gap_quantification/blob/master/gaps.png)
 
 Original pipeline (from the paper):
 
