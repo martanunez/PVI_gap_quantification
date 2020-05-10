@@ -3,15 +3,16 @@ Author: Marta Nuñez-Garcia (marnugar@gmail.com)
 
 ## About
 Implementation of the method described in: [*Mind the gap: quantification of incomplete ablation patterns after pulmonary vein isolation using minimum path search*. Marta Nuñez-Garcia, Oscar Camara, Mark D O’Neill, Reza Razavi, Henry Chubb, and Constantine Butakoff. Medical Image Analysis (2018) 51, 1-12](https://www.sciencedirect.com/science/article/abs/pii/S1361841518307965). Please cite this reference when using this code. Preprint available at: [arXiv:1806.06387.](https://arxiv.org/abs/1806.06387) 
+The code runs in Linux and Windows.
 
-We present a methodology to detect and quantify incomplete ablation lesions (or gaps) after Radiofrequency Pulmonary Vein Isolation (RF-PVI) in a reliable, reproducible and observer-independent way. We provide an unambiguous definition of the gap as the minimal portion of healthy tissue around a pulmonary vein (PV). Based on this objective definition of gap we propose a quantitative and highly reproducible index, the *Relative Gap Measure (RGM)*, which represents the proportion of the vein not encircled by scar (i.e., portion of incompleteness). More metrics such as the total gap length and the number of gaps are also provided.
+We present a methodology to detect and quantify incomplete ablation lesions (or gaps) after Radiofrequency Pulmonary Vein Isolation (RF-PVI) in a reliable, reproducible and observer-independent way. We provide an unambiguous definition of the gap as the minimal portion of healthy tissue around a pulmonary vein (PV). Based on this objective definition of gap we propose a quantitative and highly reproducible index, the *Relative Gap Measure (RGM)*, which represents the proportion of the vein not encircled by scar (i.e. portion of incompleteness). More metrics such as the total gap length and the number of gaps are also provided.
 
 Example of gap quantification result:
 ![Example](https://github.com/martanunez/PV_gap_quantification/blob/master/gaps.png)
 
 
 The method is modified with respect to the pipeline described in the paper as follows:
-- The automatic parcellation of the left atrium (LA) and the definition of the gap search areas (step 2) is done by using the flattening standardization method described in [*https://github.com/martanunez/LA_flattening*](https://github.com/martanunez/LA_flattening). 3D mesh registration is no longer used highly reducing execution time. 
+- The automatic parcellation of the left atrium (LA) and the definition of the gap search areas (step 2) are done by using the flattening standardization method described in [*https://github.com/martanunez/LA_flattening*](https://github.com/martanunez/LA_flattening). 3D mesh registration is no longer used highly reducing execution time. 
 - Only one given scar segmentation is considered (multi-threshold result integration is not included).
 
 
@@ -25,7 +26,7 @@ Schematic representation of the proposed graph based algorithm (from the paper):
 ## Pipeline
 The pipeline is split in 5 parts. Please, refer to [*https://github.com/martanunez/LA_flattening*](https://github.com/martanunez/LA_flattening) to run the first 4 steps (i.e. LA flattening).
 
-The parcellation defined in a 2D reference template is then transferred to the 2D version of the LA obtained with steps 1 to 4 and to the 3D LA mesh afterwards.
+The parcellation defined in a 2D reference template (see figure below) is then transferred to the 2D version of the LA obtained with steps 1 to 4 and to the 3D LA mesh afterwards.
 The definition of the areas where gaps will be searched is related to the chosen PVI strategy. In this work we considered the two most common PVI scenarios in clinical routine:
 - Independent-encirclement : the four PVs are independently isolated by creating PV-specific continuous lesions that completely surround each of them.
 - Joint-encirclement : the two ipsilateral veins (i.e., on the same side, right or left PVs) are jointly isolated by a lesion that simultaneously encircles the two of them.
@@ -75,11 +76,11 @@ python 5_compute_RGM_lateral_veins.py --meshfile data/mesh.vtk
 
 ## Dependencies
 The scripts in this repository were successfully run with:
-1. Ubuntu 16.04
+1. **Ubuntu 16.04**
     - [Python](https://www.python.org/) 2.7.12
     - [VMTK](http://www.vmtk.org/) 1.4
     - [VTK](https://vtk.org/) 8.1.0
-2. Windows 8.1
+2. **Windows 8.1**
     - [Python](https://www.python.org/) 3.6.4
     - [VMTK](http://www.vmtk.org/) 1.4
     - [VTK](https://vtk.org/) 8.1.0
