@@ -31,9 +31,6 @@ The definition of the areas where gaps will be searched is related to the chosen
 Searching areas depicted in a two-dimensional representation of the LA:
 <img src=https://github.com/martanunez/PV_gap_quantification/blob/master/searching_areas.png width="70%">
 
-- **5_compute_RGM_4veins:**  
-- **5_compute_RGM_lateral_veins:** 
-
 
 ## Instructions
 Clone the repository:
