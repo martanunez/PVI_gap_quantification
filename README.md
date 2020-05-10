@@ -4,15 +4,18 @@ Author: Marta Nuñez-Garcia (marnugar@gmail.com)
 ## About
 Implementation of the method described in: [*Mind the gap: quantification of incomplete ablation patterns after pulmonary vein isolation using minimum path search*. Marta Nuñez-Garcia, Oscar Camara, Mark D O’Neill, Reza Razavi, Henry Chubb, and Constantine Butakoff. Medical Image Analysis (2018) 51, 1-12](https://www.sciencedirect.com/science/article/abs/pii/S1361841518307965). Please cite this reference when using this code. Preprint available at: [arXiv:1806.06387.](https://arxiv.org/abs/1806.06387) 
 
+Example of gap quantification result:
+![Example](https://github.com/martanunez/PV_gap_quantification/blob/master/gaps.png)
+
+
 The method is modified with respect to the pipeline described in the paper as follows:
 - The automatic parcellation of the left atrium (LA) and definition of the gap searching areas (step 2) is done by using the flattening standardization method described in [*https://github.com/martanunez/LA_flattening*](https://github.com/martanunez/LA_flattening). 3D mesh registration is no longer used reducing execution time. 
 - Only one given scar segmentation is considered (multi-threshold result integration is not included).
 
-![Example](https://github.com/martanunez/PV_gap_quantification/blob/master/gaps.png)
 
-Original pipeline (from the paper):
+Schematic representation of the proposed graph based algorithm (from the paper):
 
-![Original pipeline](https://github.com/martanunez/PV_gap_quantification/blob/master/pipeline_gaps.png)
+![Algorithm](https://github.com/martanunez/PV_gap_quantification/blob/master/graph-based-algorithm.png)
 
 ## Code
 [Python](https://www.python.org/) scripts depending (basically) on [VTK](https://vtk.org/) and [VMTK](http://www.vmtk.org/). 
