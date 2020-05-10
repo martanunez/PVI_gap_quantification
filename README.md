@@ -1,4 +1,4 @@
-# Semi-automatic quantification of incomplete Pulmonary Vein Isolation (PVI)
+# Semi-automatic quantification of incomplete ablation lesions after Pulmonary Vein Isolation (PVI)
 Author: Marta Nuñez-Garcia (marnugar@gmail.com)
 
 ## About
