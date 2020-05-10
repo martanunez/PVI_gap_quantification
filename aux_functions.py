@@ -8,10 +8,7 @@ from scipy import sparse
 import scipy.sparse.linalg as linalg_sp
 from scipy.sparse import vstack, hstack, coo_matrix, csc_matrix
 import glob
-
-
 import heapq
-# from queue import Queue, heapq, deque  # for Python 2 and python 3. In needs pip install future
 
 
 ###     Input/Output    ###
@@ -2552,6 +2549,7 @@ def count_gaps_lateral_veins(path):
     return all_ngaps
 
 # From here, Dijkstra algorithm, taken from http://www.bogotobogo.com/python/python_Dijkstras_Shortest_Path_Algorithm.php
+# I added 2 lines to make it work also with Python3
 class Vertex:
     def __init__(self, node):
         self.id = node

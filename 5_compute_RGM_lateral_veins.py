@@ -84,11 +84,11 @@ worksheet.set_column('A:C', 15)  # Widen columns.
 m3d.GetPointData().RemoveArray('pv')
 m3d.GetPointData().RemoveArray('autolabels')
 m3d.GetPointData().RemoveArray('hole')
-writevtk(m3d, fileroot + '/' + filename_base + '_clipped_c_to_be_flat.vtk')
 
 # Detect and mark the PV surroundings using a reference 2D template
 transfer_all_scalar_arrays(m_disk_ref, m2d)
 transfer_all_scalar_arrays_by_point_id(m2d, m3d)
+writevtk(m3d, fileroot + '/' + filename_base + '_clipped_c_to_be_flat.vtk')
 
 # Cut the mesh to define starting and ending points surrounding each PV. Use dividing lines computed with 3_divide_LA.py
 # Use lines delimiting the posterior wall (easier to identify)
