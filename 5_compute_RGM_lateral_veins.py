@@ -29,7 +29,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--meshfile', type=str, metavar='PATH', help='path to input mesh')
 args = parser.parse_args()
 
-if os.path.isfile(args.meshfile)==False:
+if not os.path.isfile(args.meshfile):
     sys.exit('ERROR: input file does not exist')
 else:
     mesh = readvtk(args.meshfile)     # original LA mesh (i.e. with long PVs, LAA, and MV).
