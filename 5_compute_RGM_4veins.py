@@ -175,7 +175,10 @@ for vein_i in range(4):
     filename_mesh_DT = string_path + filename_base + '_vein_' + pv_label + '_DT.vtk'
 
     if platform == 'linux' or platform == 'linux2':
-        os.system('./DistanceTransformMesh ' + filename_mesh_art_blobs + ' all_blobs ' + filename_mesh_DT)
+        if (vtk.vtkVersion.GetVTKVersion() < '9.1.0'):
+            os.system('./DistanceTransformMesh_old ' + filename_mesh_art_blobs + ' all_blobs ' + filename_mesh_DT)
+        else:
+            os.system('./DistanceTransformMesh ' + filename_mesh_art_blobs + ' all_blobs ' + filename_mesh_DT)
     elif platform == 'win32':
         os.system('DistanceTransform_Windows\DistanceTransformMesh.exe ' + filename_mesh_art_blobs + ' all_blobs ' + filename_mesh_DT)
     else:
@@ -196,7 +199,10 @@ for vein_i in range(4):
             # Compute distance transform WITHOUT artificial blobs
             filename_mesh_auxDT = string_path + filename_base + '_vein_' + pv_label + 'aux_DT.vtk'
             if platform == 'linux' or platform == 'linux2':
-                os.system('./DistanceTransformMesh ' + outfile_open + ' blob ' + filename_mesh_auxDT)
+                if (vtk.vtkVersion.GetVTKVersion() < '9.1.0'):
+                    os.system('./DistanceTransformMesh_old ' + outfile_open + ' blob ' + filename_mesh_auxDT)
+                else:
+                    os.system('./DistanceTransformMesh ' + outfile_open + ' blob ' + filename_mesh_auxDT)
             elif platform == 'win32':
                 os.system('DistanceTransform_Windows\DistanceTransformMesh.exe ' + outfile_open + ' blob ' + filename_mesh_auxDT)
 

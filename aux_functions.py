@@ -26,13 +26,11 @@ def readvtp(filename):
     reader.Update()
     return reader.GetOutput()
 
-def writevtk(surface, filename, type='ascii'):
+# def writevtk(surface, filename, type='ascii'):
+def writevtk(surface, filename, type='binary'):
     """Write binary or ascii VTK file"""
     writer = vtk.vtkPolyDataWriter()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        writer.SetInputData(surface)
-    else:
-        writer.SetInput(surface)
+    writer.SetInputData(surface)
     writer.SetFileName(filename)
     if type == 'ascii':
         writer.SetFileTypeToASCII()
@@ -43,10 +41,7 @@ def writevtk(surface, filename, type='ascii'):
 def writevtp(surface, filename):
     """Write VTP file"""
     writer = vtk.vtkXMLPolyDataWriter()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        writer.SetInputData(surface)
-    else:
-        writer.SetInput(surface)
+    writer.SetInputData(surface)
     writer.SetFileName(filename)
 #    writer.SetDataModeToBinary()
     writer.Write()
@@ -92,20 +87,14 @@ def normalizevector(v):
 
 def cleanpolydata(polydata):
     cleaner = vtk.vtkCleanPolyData()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        cleaner.SetInputData(polydata)
-    else:
-        cleaner.SetInput(polydata)
+    cleaner.SetInputData(polydata)
     cleaner.Update()
     return cleaner.GetOutput()
 
 def fillholes(polydata, size):
     """Fill mesh holes smaller than 'size' """
     filler = vtk.vtkFillHolesFilter()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        filler.SetInputData(polydata)
-    else:
-        filler.SetInput(polydata)
+    filler.SetInputData(polydata)
     filler.SetHoleSize(size)
     filler.Update()
     return filler.GetOutput()
@@ -113,28 +102,31 @@ def fillholes(polydata, size):
 def pointthreshold(polydata, arrayname, start=0, end=1, alloff=0):
     """ Clip polydata according to given thresholds in scalar array"""
     threshold = vtk.vtkThreshold()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        threshold.SetInputData(polydata)
+    if (vtk.vtkVersion.GetVTKMajorVersion() >= 9):
+        threshold.SetLowerThreshold(start)
+        threshold.SetUpperThreshold(end)
     else:
-        threshold.SetInput(polydata)
+        threshold.ThresholdBetween(start, end)
+
+    threshold.SetInputData(polydata)
     threshold.SetInputArrayToProcess(0, 0, 0, vtk.vtkDataObject.FIELD_ASSOCIATION_POINTS, arrayname)
-    threshold.ThresholdBetween(start, end)
     if (alloff):
         threshold.AllScalarsOff()
     threshold.Update()
     surfer = vtk.vtkDataSetSurfaceFilter()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        surfer.SetInputData(threshold.GetOutput())
-    else:
-        surfer.SetInput(threshold.GetOutput())
+    surfer.SetInputData(threshold.GetOutput())
     surfer.Update()
     return surfer.GetOutput()
 
 def cellthreshold(polydata, arrayname, start=0, end=1):
     threshold = vtk.vtkThreshold()
     threshold.SetInputData(polydata)
-    threshold.SetInputArrayToProcess(0,0,0,vtk.vtkDataObject.FIELD_ASSOCIATION_CELLS,arrayname)
-    threshold.ThresholdBetween(start,end)
+    threshold.SetInputArrayToProcess(0, 0, 0, vtk.vtkDataObject.FIELD_ASSOCIATION_CELLS, arrayname)
+    if (vtk.vtkVersion.GetVTKMajorVersion() >= 9):
+        threshold.SetLowerThreshold(start)
+        threshold.SetUpperThreshold(end)
+    else:
+        threshold.ThresholdBetween(start, end)
     threshold.Update()
 
     surfer = vtk.vtkDataSetSurfaceFilter()
@@ -158,10 +150,7 @@ def planeclip(surface, point, normal, insideout=1):
     clipplane.SetOrigin(point)
     clipplane.SetNormal(normal)
     clipper = vtk.vtkClipPolyData()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        clipper.SetInputData(surface)
-    else:
-        clipper.SetInput(surface)
+    clipper.SetInputData(surface)
     clipper.SetClipFunction(clipplane)
 
     if insideout == 1:
@@ -179,10 +168,7 @@ def cutdataset(dataset, point, normal):
     cutplane.SetOrigin(point)
     cutplane.SetNormal(normal)
     cutter = vtk.vtkCutter()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        cutter.SetInputData(dataset)
-    else:
-        cutter.SetInput(dataset)
+    cutter.SetInputData(dataset)
     cutter.SetCutFunction(cutplane)
     cutter.Update()
     return cutter.GetOutput()
@@ -222,12 +208,8 @@ def point2vertexglyph(point):
 def generateglyph(polyIn, scalefactor=2):
     vertexGlyphFilter = vtk.vtkGlyph3D()
     sphereSource = vtk.vtkSphereSource()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        vertexGlyphFilter.SetSourceData(sphereSource.GetOutput())
-        vertexGlyphFilter.SetInputData(polyIn)
-    else:
-        vertexGlyphFilter.SetSource(sphereSource.GetOutput())
-        vertexGlyphFilter.SetInput(polyIn)
+    vertexGlyphFilter.SetSourceData(sphereSource.GetOutput())
+    vertexGlyphFilter.SetInputData(polyIn)
     vertexGlyphFilter.SetColorModeToColorByScalar()
     vertexGlyphFilter.SetSourceConnection(sphereSource.GetOutputPort())
     vertexGlyphFilter.ScalingOn()
@@ -255,10 +237,7 @@ def append_polys(list):
     append = vtk.vtkAppendPolyData()
     for n in range(len(list)):
         poly = readvtk(list[n])
-        if vtk.vtkVersion().GetVTKMajorVersion() < 5:
-            append.AddInput(poly)
-        else:
-            append.AddInputData(poly)
+        append.AddInputData(poly)
     append.Update()
     return append.GetOutput()
 
@@ -270,27 +249,18 @@ def extractcells(polydata, idlist):
         cellids.InsertNextId(i)
 
     extract = vtk.vtkExtractCells()  # extract cells with specified cellids
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        extract.SetInputData(polydata)
-    else:
-        extract.SetInput(polydata)
+    extract.SetInputData(polydata)
     extract.AddCellList(cellids)
     extraction = extract.GetOutput()
 
     geometry = vtk.vtkGeometryFilter()  # unstructured grid to polydata
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        geometry.SetInputData(extraction)
-    else:
-        geometry.SetInput(extraction)
+    geometry.SetInputData(extraction)
     geometry.Update()
     return geometry.GetOutput()
 
 def extractboundaryedge(polydata):
     edge = vtk.vtkFeatureEdges()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        edge.SetInputData(polydata)
-    else:
-        edge.SetInput(polydata)
+    edge.SetInputData(polydata)
     edge.FeatureEdgesOff()
     edge.NonManifoldEdgesOff()
     edge.Update()
@@ -299,32 +269,20 @@ def extractboundaryedge(polydata):
 def extractlargestregion(polydata):
     """Keep only biggest region"""
     surfer = vtk.vtkDataSetSurfaceFilter()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        surfer.SetInputData(polydata)
-    else:
-        surfer.SetInput(polydata)
+    surfer.SetInputData(polydata)
     surfer.Update()
 
     cleaner = vtk.vtkCleanPolyData()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        cleaner.SetInputData(surfer.GetOutput())
-    else:
-        cleaner.SetInput(surfer.GetOutput())
+    cleaner.SetInputData(surfer.GetOutput())
     cleaner.Update()
 
     connect = vtk.vtkPolyDataConnectivityFilter()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        connect.SetInputData(cleaner.GetOutput())
-    else:
-        connect.SetInput(cleaner.GetOutput())
+    connect.SetInputData(cleaner.GetOutput())
     connect.SetExtractionModeToLargestRegion()
     connect.Update()
 
     cleaner = vtk.vtkCleanPolyData()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        cleaner.SetInputData(connect.GetOutput())
-    else:
-        cleaner.SetInput(connect.GetOutput())
+    cleaner.SetInputData(connect.GetOutput())
     cleaner.Update()
     return cleaner.GetOutput()
 
@@ -332,24 +290,15 @@ def countregions(polydata):
     """Count number of connected components/regions"""
     # preventive measures: clean before connectivity filter to avoid artificial regionIds
     surfer = vtk.vtkDataSetSurfaceFilter()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        surfer.SetInputData(polydata)
-    else:
-        surfer.SetInput(polydata)
+    surfer.SetInputData(polydata)
     surfer.Update()
 
     cleaner = vtk.vtkCleanPolyData()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        cleaner.SetInputData(surfer.GetOutput())
-    else:
-        cleaner.SetInput(surfer.GetOutput())
+    cleaner.SetInputData(surfer.GetOutput())
     cleaner.Update()
 
     connect = vtk.vtkPolyDataConnectivityFilter()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        connect.SetInputData(cleaner.GetOutput())
-    else:
-        connect.SetInput(cleaner.GetOutput())
+    connect.SetInputData(cleaner.GetOutput())
     connect.Update()
     return connect.GetNumberOfExtractedRegions()
 
@@ -358,24 +307,15 @@ def extractclosestpointregion(polydata, point=[0, 0, 0]):
     # to avoid artificial regionIds
     # It slices the surface down the middle
     surfer = vtk.vtkDataSetSurfaceFilter()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        surfer.SetInputData(polydata)
-    else:
-        surfer.SetInput(polydata)
+    surfer.SetInputData(polydata)
     surfer.Update()
 
     cleaner = vtk.vtkCleanPolyData()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        cleaner.SetInputData(surfer.GetOutput())
-    else:
-        cleaner.SetInput(surfer.GetOutput())
+    cleaner.SetInputData(surfer.GetOutput())
     cleaner.Update()
 
     connect = vtk.vtkPolyDataConnectivityFilter()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        connect.SetInputData(cleaner.GetOutput())
-    else:
-        connect.SetInput(cleaner.GetOutput())
+    connect.SetInputData(cleaner.GetOutput())
     connect.SetExtractionModeToClosestPointRegion()
     connect.SetClosestPoint(point)
     connect.Update()
@@ -384,24 +324,15 @@ def extractclosestpointregion(polydata, point=[0, 0, 0]):
 def extractconnectedregion(polydata, regionid):
     """Extract connected region with label = regionid """
     surfer = vtk.vtkDataSetSurfaceFilter()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        surfer.SetInputData(polydata)
-    else:
-        surfer.SetInput(polydata)
+    surfer.SetInputData(polydata)
     surfer.Update()
 
     cleaner = vtk.vtkCleanPolyData()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        cleaner.SetInputData(surfer.GetOutput())
-    else:
-        cleaner.SetInput(surfer.GetOutput())
+    cleaner.SetInputData(surfer.GetOutput())
     cleaner.Update()
 
     connect = vtk.vtkPolyDataConnectivityFilter()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        connect.SetInputData(cleaner.GetOutput())
-    else:
-        connect.SetInput(cleaner.GetOutput())
+    connect.SetInputData(cleaner.GetOutput())
 
     connect.SetExtractionModeToAllRegions()
     connect.ColorRegionsOn()
@@ -412,10 +343,7 @@ def extractconnectedregion(polydata, regionid):
 def get_connected_components(polydata):
     """Extract all connected regions"""
     connect = vtk.vtkPolyDataConnectivityFilter()
-    if vtk.vtkVersion.GetVTKMajorVersion() > 5:
-        connect.SetInputData(polydata)
-    else:
-        connect.SetInput(polydata)
+    connect.SetInputData(polydata)
     connect.SetExtractionModeToAllRegions()
     connect.ColorRegionsOn()
     connect.Update()
@@ -424,10 +352,16 @@ def get_connected_components(polydata):
 def find_create_path(mesh, p1, p2):
     """Get shortest path (using Dijkstra algorithm) between p1 and p2 on the mesh. Returns a polydata"""
     dijkstra = vtk.vtkDijkstraGraphGeodesicPath()
-    if vtk.vtkVersion().GetVTKMajorVersion() > 5:
-        dijkstra.SetInputData(mesh)
+    # (VTK 9.1 and later...) The Dijkistra interpolator will not accept cells that aren't triangles
+    if (vtk.vtkVersion.GetVTKMajorVersion() >= 9):
+        triangleFilter = vtk.vtkTriangleFilter()
+        triangleFilter.SetInputData(mesh)
+        triangleFilter.Update()
+        pd = triangleFilter.GetOutput()
+        dijkstra.SetInputData(pd)
     else:
-        dijkstra.SetInput(mesh)
+        dijkstra.SetInputData(mesh)
+
     dijkstra.SetStartVertex(p1)
     dijkstra.SetEndVertex(p2)
     dijkstra.Update()
@@ -535,7 +469,7 @@ def get_ordered_cont_ids_based_on_distance(mesh):
         # read the 2 involved points
         pid0 = ptids.GetId(0)
         pid1 = ptids.GetId(1)
-        p0 = mesh.GetPoint(ptids.GetId(0))   # coordinates
+        p0 = mesh.GetPoint(ptids.GetId(0))   # returns coordinates
         p1 = mesh.GetPoint(ptids.GetId(1))
 
         if pid0 == 0:
@@ -580,9 +514,13 @@ def get_ordered_cont_ids_based_on_distance(mesh):
     if added == False:
         print('Warning: I have not added any point, list of indexes may not be correct.')
     cover.SetPoints(points)
-    cover.SetPolys(polys)
-    if not vtk.vtkVersion.GetVTKMajorVersion() > 5:
+
+    if (vtk.vtkVersion.GetVTKMajorVersion() >= 9):
+        cover.SetLines(polys)
+    else:
+        cover.SetPolys(polys)
         cover.Update()
+
     # compute distance from point with id 0 to all the rest
     npoints = cover.GetNumberOfPoints()
     dists = np.zeros(npoints)
@@ -1622,8 +1560,6 @@ def transfer_carinas_and_lines(mesh, path_1, path_2, path_3, path_4):
     newarray = numpy_to_vtk(carina_array)
     newarray.SetName("carinas")
     mesh.GetPointData().AddArray(newarray)
-    if vtk.vtkVersion().GetVTKMajorVersion() < 5:
-        mesh.Update()
 
     lines_array = np.zeros(mesh.GetNumberOfPoints())
     locator = vtk.vtkPointLocator()
@@ -1641,8 +1577,6 @@ def transfer_carinas_and_lines(mesh, path_1, path_2, path_3, path_4):
     newarray = numpy_to_vtk(lines_array)
     newarray.SetName("lines")
     mesh.GetPointData().AddArray(newarray)
-    if vtk.vtkVersion().GetVTKMajorVersion() < 5:
-        mesh.Update()
     return mesh
 
 
